@@ -1,0 +1,194 @@
+/* =================================================================== */
+/* =        HOJA DE ESTILOS PROFESIONAL FINAL - StudyHub           = */
+/* =================================================================== */
+
+/* --- 1. Variables CSS para Temas --- */
+:root {
+    /* Tema Oscuro (por defecto) */
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --border-color: #3a3a3a;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-green: #22c55e;
+    --accent-red: #ef4444;
+    --font-family: 'Inter', sans-serif;
+    --progress-color: var(--accent-green);
+}
+body.light-mode {
+    /* Tema Claro */
+    --bg-primary: #f4f4f5;
+    --bg-secondary: #ffffff;
+    --border-color: #e4e4e7;
+    --text-primary: #18181b;
+    --text-secondary: #71717a;
+}
+
+/* --- 2. Estilos Globales --- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-family); background-color: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; }
+.main-container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+.hidden { display: none !important; }
+
+/* --- 3. Header --- */
+.app-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); }
+.logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 700; }
+.app-nav { display: flex; gap: 2rem; }
+.nav-link { text-decoration: none; color: var(--text-secondary); font-weight: 500; transition: color 0.2s ease; }
+.nav-link:hover, .nav-link.active { color: var(--text-primary); }
+.profile-icon .material-symbols-outlined { font-size: 2rem; color: var(--text-secondary); cursor: pointer; }
+
+/* --- 4. Sección Hero (SOLO EN INDEX.HTML) --- */
+.hero-section { text-align: center; padding: 4rem 1rem; margin-bottom: 2rem; }
+.hero-text h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 1.5rem; }
+.hero-text p { font-size: 1.2rem; color: var(--text-secondary); margin: 0 auto 2.5rem auto; max-width: 600px; }
+.hero-cta { padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; background-color: var(--accent-blue); color: white; transition: all 0.2s ease; }
+.hero-cta:hover { background-color: #2563eb; transform: scale(1.05); }
+
+/* --- 5. Sección de Asignaturas --- */
+.subjects-section { margin-top: 2rem; margin-bottom: 4rem; }
+.subjects-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1.5rem; }
+.subjects-header h2 { font-size: 2rem; font-weight: 700; }
+.search-bar-wrapper { /* Este selector ya no es necesario */ }
+.search-bar { position: relative; }
+.search-bar .material-symbols-outlined { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none; }
+.search-bar input { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem 0.75rem 3rem; color: var(--text-primary); font-size: 1rem; width: 300px; transition: background-color 0.3s, border-color 0.3s; }
+.subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+.subject-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; text-decoration: none; color: var(--text-primary); transition: all 0.3s ease; display: flex; flex-direction: column; }
+.subject-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+.card-icon-bg { width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
+.card-icon { font-size: 2rem; }
+.subject-card h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; }
+.card-progress { margin-top: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+.progress-percent { font-weight: 600; color: var(--text-secondary); }
+.progress-bar-bg { flex-grow: 1; height: 8px; background-color: var(--border-color); border-radius: 99px; }
+.progress-bar { height: 100%; background-color: var(--progress-color); border-radius: 99px; transition: width 0.5s ease; }
+.no-subjects { color: var(--text-secondary); grid-column: 1 / -1; text-align: center; padding: 2rem; }
+
+/* --- 6. Modal de Creación IA --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 1; transition: opacity 0.3s ease; }
+.modal-overlay.hidden { opacity: 0; pointer-events: none; }
+.modal-content { background-color: var(--bg-secondary); padding: 2.5rem; border-radius: 16px; width: 90%; max-width: 700px; position: relative; transform: scale(1); transition: transform 0.3s ease, background-color 0.3s; }
+.modal-overlay.hidden .modal-content { transform: scale(0.9); }
+.modal-close-btn { position: absolute; top: 1rem; right: 1.5rem; background: none; border: none; color: var(--text-secondary); font-size: 2rem; cursor: pointer; }
+.ai-header { text-align: center; margin-bottom: 2rem; }
+.ai-title { font-size: 1.75rem; font-weight: 600; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+.ai-subtitle { color: var(--text-secondary); font-weight: 400; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+.ai-content { display: flex; flex-direction: column; gap: 1.5rem; }
+.ai-textarea, .ai-text-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; color: var(--text-primary); font-family: var(--font-family); font-size: 1rem; transition: all 0.3s; }
+.ai-textarea { min-height: 150px; resize: vertical; }
+.ai-textarea:focus, .ai-text-input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+.ai-input-group { display: flex; gap: 1.5rem; width: 100%; }
+.action-button { align-self: center; padding: 14px 24px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); color: white; border: none; }
+.action-button:disabled { background: var(--bg-secondary); color: var(--text-secondary); cursor: not-allowed; }
+.action-button.secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
+.action-button.secondary:hover { background: var(--bg-primary); }
+.ai-output-container { margin-top: 1rem; }
+.ai-loading, .ai-error { text-align: center; padding: 1rem; border-radius: 8px; }
+.ai-loading { color: var(--text-secondary); background-color: var(--bg-primary); }
+.ai-error { color: white; background-color: var(--accent-red); }
+
+/* --- 7. Página de Ajustes --- */
+.settings-section h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+.setting-item { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
+.setting-text h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.25rem; }
+.setting-text p { color: var(--text-secondary); }
+.theme-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+.theme-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent-blue); }
+input:checked + .slider:before { transform: translateX(26px); }
+
+/* --- 8. Página de Estudio (topic.html) --- */
+.topic-header { text-align:center; margin-bottom: 2rem; }
+.topic-header h1 {font-size: 2.5rem; font-weight: 700;}
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 99px; /* Esto lo hace redondeado */
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+.back-button:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    border-color: var(--accent-blue);
+}
+.study-nav { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem;}
+.nav-button { padding: 10px 20px; font-size: 1rem; border: 1px solid var(--border-color); background-color: transparent; color: var(--text-secondary); cursor: pointer; border-radius: 8px; transition: all .2s;}
+.nav-button.active { background-color: var(--accent-blue); color: white; border-color: var(--accent-blue);}
+.nav-count { background-color: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; margin-left: 8px;}
+body.light-mode .nav-count { background-color: rgba(0,0,0,0.1); }
+
+/* ESTILOS MODIFICADOS PARA FLASHCARDS 3D Y TESTS */
+.flashcard-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
+.flashcard-scene { background-color: transparent; min-height: 250px; perspective: 1000px; }
+.flashcard { position: relative; width: 100%; height: 100%; cursor: pointer; transition: transform 0.8s; transform-style: preserve-3d; }
+.flashcard.is-flipped { transform: rotateY(180deg); }
+.fc-face { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+.fc-face--front { color: var(--text-primary); }
+.fc-face--front p { font-size: 1.25rem; font-weight: 500; }
+.fc-face--back { transform: rotateY(180deg); }
+.fc-face--back p { color: var(--text-secondary); line-height: 1.7; font-size: 1.1rem; }
+.fc-face--back strong { color: var(--accent-blue); font-weight: 500; }
+
+.test-container { background-color: var(--bg-secondary); padding: 2rem; border-radius: 12px; }
+.quiz-question-group { margin-bottom: 2.5rem; }
+.quiz-question-group p { font-size: 1.2rem; font-weight: 500; margin-bottom: 1.5rem; }
+.test-options { display: flex; flex-direction: column; gap: 1rem; }
+.option-button { display: block; width: 100%; padding: 1rem; background-color: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 1rem; font-weight: 500; }
+.option-button:hover:not(.disabled) { border-color: var(--accent-blue); background-color: var(--bg-secondary); }
+.test-options input[type="radio"] { display: none; }
+.test-options input[type="radio"]:checked + .option-button { background-color: var(--accent-blue); border-color: var(--accent-blue); color: white; }
+.option-button.correct { background-color: var(--accent-green) !important; border-color: var(--accent-green) !important; color: white !important; }
+.option-button.incorrect { background-color: var(--accent-red) !important; border-color: var(--accent-red) !important; color: white !important; }
+.option-button.disabled { cursor: default; opacity: 0.7; }
+.test-footer { margin-top: 2rem; text-align: center; }
+#test-results-summary { margin-top: 1.5rem; text-align: center; display: flex; flex-direction: column; gap: 1.5rem; align-items: center; }
+
+/* --- 9. Responsividad --- */
+@media (max-width: 768px) {
+    .app-header { flex-direction: column; gap: 1rem; }
+    .hero-section { padding: 2rem 1rem; }
+    .hero-text h1 { font-size: 2.5rem; }
+    .subjects-header { flex-direction: column; align-items: stretch; }
+    .search-bar-wrapper { flex-direction: column; align-items: stretch; }
+    .search-bar input { width: 100%; }
+    .ai-input-group { flex-direction: column; }
+    .flashcard-grid { grid-template-columns: 1fr; }
+}
+/* --- AÑADIR AL FINAL DEL ARCHIVO CSS --- */
+
+/* --- 10. Sección de Eliminación (subject.html) --- */
+.delete-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.action-button.danger {
+    background: transparent;
+    border: 1px solid var(--accent-red);
+    color: var(--accent-red);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.action-button.danger:hover {
+    background: var(--accent-red);
+    color: white;
+}
