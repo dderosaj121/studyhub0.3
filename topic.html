@@ -47,6 +47,13 @@
             <div id="active-recall-view" class="view-container hidden">
                 <div id="ar-container"></div>
             </div>
+
+            <div class="delete-section">
+                <button id="delete-topic-btn" class="action-button danger">
+                    <span class="material-symbols-outlined">delete</span>
+                    Eliminar Tema
+                </button>
+            </div>
         </main>
     </div>
 
@@ -56,18 +63,18 @@
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') document.body.classList.add('light-mode');
 
-            const appData = window.studyHubData;
+            let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || window.studyHubData;
             
             const urlParams = new URLSearchParams(window.location.search);
             const subjectKey = urlParams.get('subject');
             const topicKey = urlParams.get('topic');
 
-            if (!subjectKey || !topicKey || !appData[subjectKey] || !appData[subjectKey].topics[topicKey]) {
+            if (!subjectKey || !topicKey || !studyHubData[subjectKey] || !studyHubData[subjectKey].topics[topicKey]) {
                 document.body.innerHTML = '<h1>Error: Tema no encontrado.</h1><a href="index.html">Volver</a>';
                 return;
             }
             
-            const subjectData = appData[subjectKey];
+            const subjectData = studyHubData[subjectKey];
             const topicData = subjectData.topics[topicKey];
             const originalFlashcards = topicData.flashcardData || [];
             const quizQuestions = topicData.quizData || [];
@@ -174,7 +181,7 @@
                     return;
                 }
 
-                let cardsToStudy = [...originalFlashcards];
+                let cardsToStudy = [...originalFlashcards]; // Empezamos con todas las tarjetas
                 let cardsToRetry = [];
                 let currentCardIndex = 0;
 
@@ -227,6 +234,7 @@
                     questionEl.innerHTML = cardsToStudy[index].q;
                     answerTextEl.innerHTML = cardsToStudy[index].a;
 
+                    // Reset state
                     answerContainerEl.classList.add('hidden');
                     ratingButtonsEl.classList.add('hidden');
                     showAnswerBtn.classList.remove('hidden');
@@ -288,6 +296,19 @@
 
                 startSession(originalFlashcards);
             }
+
+            // --- Lógica para Eliminar Tema ---
+            function handleDeleteTopic() {
+                const confirmation = confirm(`¿Estás seguro de que quieres eliminar el tema "${topicData.titulo}"? Esta acción no se puede deshacer.`);
+                if (confirmation) {
+                    localStorage.removeItem(`studyhub-stats-${topicKey}`);
+                    delete studyHubData[subjectKey].topics[topicKey];
+                    localStorage.setItem('studyHubData', JSON.stringify(studyHubData));
+                    alert(`El tema "${topicData.titulo}" ha sido eliminado.`);
+                    window.location.href = `subject.html?subject=${subjectKey}`;
+                }
+            }
+            document.getElementById('delete-topic-btn').addEventListener('click', handleDeleteTopic);
 
             // --- Inicialización de las Vistas ---
             renderFlashcardsGrid();

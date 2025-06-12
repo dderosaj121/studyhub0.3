@@ -33,20 +33,33 @@
             <div id="topics-grid" class="subjects-grid">
                 <!-- Las tarjetas de temas se cargarán aquí -->
             </div>
+
+            <!-- BOTÓN DE ELIMINAR -->
+            <div class="delete-section">
+                <button id="delete-subject-btn" class="action-button danger">
+                    <span class="material-symbols-outlined">delete</span>
+                    Eliminar Asignatura
+                </button>
+            </div>
         </main>
     </div>
 
     <script src="data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Carga el tema guardado
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') {
                 document.body.classList.add('light-mode');
             }
 
-            const appData = window.studyHubData;
+            // Carga los datos de las asignaturas
+            const appData = JSON.parse(localStorage.getItem('studyHubData'));
+
             const urlParams = new URLSearchParams(window.location.search);
             const subjectKey = urlParams.get('subject');
+            const deleteBtn = document.getElementById('delete-subject-btn');
+
 
             if (!subjectKey || !appData[subjectKey]) {
                 document.body.innerHTML = '<h1>Error: Asignatura no encontrada.</h1><a href="index.html">Volver</a>';
@@ -92,6 +105,30 @@
                     topicsGrid.appendChild(card);
                 }
             }
+
+            // FUNCIÓN PARA MANEJAR LA ELIMINACIÓN
+            function handleDeleteSubject() {
+                const confirmation = confirm(`¿Estás seguro de que quieres eliminar la asignatura "${subjectData.titulo}"? Esta acción no se puede deshacer.`);
+
+                if (confirmation) {
+                    // 1. Eliminar datos de progreso de cada tema
+                    for (const topicKey in topics) {
+                        localStorage.removeItem(`studyhub-stats-${topicKey}`);
+                    }
+                    
+                    // 2. Eliminar la asignatura del objeto principal
+                    delete appData[subjectKey];
+                    
+                    // 3. Guardar los datos actualizados en localStorage
+                    localStorage.setItem('studyHubData', JSON.stringify(appData));
+                    
+                    // 4. Redirigir a la página de inicio
+                    alert(`La asignatura "${subjectData.titulo}" ha sido eliminada.`);
+                    window.location.href = 'index.html';
+                }
+            }
+            
+            deleteBtn.addEventListener('click', handleDeleteSubject);
         });
     </script>
 </body>

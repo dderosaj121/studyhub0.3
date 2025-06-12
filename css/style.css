@@ -45,6 +45,8 @@ body { font-family: var(--font-family); background-color: var(--bg-primary); col
 .hero-section { text-align: center; padding: 4rem 1rem; margin-bottom: 2rem; }
 .hero-section h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 1.5rem; }
 .hero-section p { font-size: 1.2rem; color: var(--text-secondary); margin: 0 auto 2.5rem auto; max-width: 600px; }
+.hero-cta { padding: 1rem 2.5rem; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; background-color: var(--accent-blue); color: white; transition: all 0.2s ease; }
+.hero-cta:hover { background-color: #2563eb; transform: scale(1.05); }
 
 /* --- 5. Sección de Asignaturas --- */
 .subjects-section { margin-top: 2rem; margin-bottom: 4rem; }
@@ -65,12 +67,29 @@ body { font-family: var(--font-family); background-color: var(--bg-primary); col
 .progress-bar { height: 100%; background-color: var(--progress-color); border-radius: 99px; transition: width 0.5s ease; }
 .no-subjects { color: var(--text-secondary); grid-column: 1 / -1; text-align: center; padding: 2rem; }
 
-/* --- 6. Botones Genéricos --- */
+/* --- 6. Modal de Creación IA (SI SE USA) --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 1; transition: opacity 0.3s ease; }
+.modal-overlay.hidden { opacity: 0; pointer-events: none; }
+.modal-content { background-color: var(--bg-secondary); padding: 2.5rem; border-radius: 16px; width: 90%; max-width: 700px; position: relative; transform: scale(1); transition: transform 0.3s ease, background-color 0.3s; }
+.modal-overlay.hidden .modal-content { transform: scale(0.9); }
+.modal-close-btn { position: absolute; top: 1rem; right: 1.5rem; background: none; border: none; color: var(--text-secondary); font-size: 2rem; cursor: pointer; }
+.ai-header { text-align: center; margin-bottom: 2rem; }
+.ai-title { font-size: 1.75rem; font-weight: 600; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+.ai-subtitle { color: var(--text-secondary); font-weight: 400; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+.ai-content { display: flex; flex-direction: column; gap: 1.5rem; }
+.ai-textarea, .ai-text-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; color: var(--text-primary); font-family: var(--font-family); font-size: 1rem; transition: all 0.3s; }
+.ai-textarea { min-height: 150px; resize: vertical; }
+.ai-textarea:focus, .ai-text-input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+.ai-input-group { display: flex; gap: 1.5rem; width: 100%; }
 .action-button { align-self: center; padding: 14px 24px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; background: var(--accent-blue); color: white; border: none; transition: background-color 0.2s, transform 0.2s; }
 .action-button:hover { transform: translateY(-2px); }
 .action-button:disabled { background: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; }
 .action-button.secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
 .action-button.secondary:hover { background: var(--bg-primary); }
+.ai-output-container { margin-top: 1rem; }
+.ai-loading, .ai-error { text-align: center; padding: 1rem; border-radius: 8px; }
+.ai-loading { color: var(--text-secondary); background-color: var(--bg-primary); }
+.ai-error { color: white; background-color: var(--accent-red); }
 
 /* --- 7. Página de Ajustes --- */
 .settings-section h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
@@ -129,6 +148,7 @@ body.light-mode .nav-count { background-color: rgba(0,0,0,0.1); }
     .hero-section h1 { font-size: 2.5rem; }
     .subjects-header { flex-direction: column; align-items: stretch; }
     .search-bar input { width: 100%; }
+    .ai-input-group { flex-direction: column; }
     .flashcard-grid { grid-template-columns: 1fr; }
 }
 
@@ -195,6 +215,7 @@ body.light-mode .nav-count { background-color: rgba(0,0,0,0.1); }
     margin-top: 1rem;
 }
 
+/* Estilos para los botones de calificación */
 .ar-rating-buttons {
     display: flex;
     justify-content: center;
@@ -212,15 +233,16 @@ body.light-mode .nav-count { background-color: rgba(0,0,0,0.1); }
     background: var(--accent-green);
 }
 .action-button.correct-btn:hover {
-    background: #16a34a; 
+    background: #16a34a; /* Un verde un poco más oscuro al pasar el ratón */
 }
 .action-button.incorrect-btn {
     background: var(--accent-red);
 }
 .action-button.incorrect-btn:hover {
-    background: #dc2626; 
+    background: #dc2626; /* Un rojo un poco más oscuro al pasar el ratón */
 }
 
+/* Estilos para la pantalla de resultados del Active Recall */
 .ar-results-screen {
     text-align: center;
 }
