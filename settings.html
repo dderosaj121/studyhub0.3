@@ -47,7 +47,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const themeToggle = document.getElementById('theme-toggle');
 
-            // 1. Aplicar el tema al cargar la página
             function applyTheme() {
                 const currentTheme = localStorage.getItem('theme');
                 if (currentTheme === 'light') {
@@ -59,7 +58,6 @@
                 }
             }
             
-            // 2. Escuchar cambios en el interruptor
             themeToggle.addEventListener('change', () => {
                 if (themeToggle.checked) {
                     document.body.classList.add('light-mode');
@@ -70,7 +68,6 @@
                 }
             });
 
-            // 3. Ejecución inicial
             applyTheme();
         });
     </script>

@@ -10,7 +10,6 @@
 </head>
 <body>
     
-    <!-- ======== CONTENIDO PRINCIPAL DE LA PÁGINA ======== -->
     <div class="main-container">
         <header class="app-header">
             <div class="logo">
@@ -50,88 +49,88 @@
 
     <script src="data.js"></script>
     <script>
-        // --- 1. CARGA INICIAL Y TEMA ---
-        function applyTheme() {
-            const currentTheme = localStorage.getItem('theme');
-            if (currentTheme === 'light') {
-                document.body.classList.add('light-mode');
-            } else {
-                document.body.classList.remove('light-mode');
-            }
-        }
-        applyTheme();
-
-        // Si no hay datos en localStorage, usa los de data.js
-        if (!localStorage.getItem('studyHubData')) {
-            localStorage.setItem('studyHubData', JSON.stringify(window.studyHubData));
-        }
-        
-        // Carga los datos desde localStorage para que se puedan borrar asignaturas
-        let appData = JSON.parse(localStorage.getItem('studyHubData'));
-
-        // --- 2. REFERENCIAS ---
-        const subjectsGrid = document.getElementById('subjects-grid');
-        const searchInput = document.getElementById('search-input');
-        
-        // --- 3. LÓGICA DE LA INTERFAZ (UI) ---
-        function getSubjectProgress(subjectKey) {
-            const subject = appData[subjectKey];
-            if (!subject || !subject.topics || Object.keys(subject.topics).length === 0) return 0;
-            let totalScore = 0, topicCountWithScore = 0;
-            for (const topicKey in subject.topics) {
-                const stats = JSON.parse(localStorage.getItem(`studyhub-stats-${topicKey}`)) || {};
-                if (stats.score !== undefined) {
-                    totalScore += stats.score;
-                    topicCountWithScore++;
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. APLICAR TEMA
+            function applyTheme() {
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'light') {
+                    document.body.classList.add('light-mode');
                 }
             }
-            return topicCountWithScore > 0 ? Math.round(totalScore / topicCountWithScore) : 0;
-        }
+            applyTheme();
 
-        function renderSubjects(filteredData = appData) {
-            if (!subjectsGrid) return;
-            subjectsGrid.innerHTML = '';
-            if (!filteredData || Object.keys(filteredData).length === 0) {
-                 subjectsGrid.innerHTML = '<p class="no-subjects">No tienes asignaturas guardadas.</p>';
-                 return;
+            // 2. CARGAR DATOS DIRECTAMENTE DESDE data.js
+            const appData = window.studyHubData;
+            
+            // 3. REFERENCIAS DEL DOM
+            const subjectsGrid = document.getElementById('subjects-grid');
+            const searchInput = document.getElementById('search-input');
+
+            // 4. LÓGICA DE LA INTERFAZ
+            function getSubjectProgress(subjectKey) {
+                const subject = appData[subjectKey];
+                if (!subject || !subject.topics || Object.keys(subject.topics).length === 0) return 0;
+                let totalScore = 0, topicCountWithScore = 0;
+                for (const topicKey in subject.topics) {
+                    const stats = JSON.parse(localStorage.getItem(`studyhub-stats-${topicKey}`)) || {};
+                    if (stats.score !== undefined) {
+                        totalScore += stats.score;
+                        topicCountWithScore++;
+                    }
+                }
+                return topicCountWithScore > 0 ? Math.round(totalScore / topicCountWithScore) : 0;
             }
-            let delay = 0;
-            for (const subjectKey in filteredData) {
-                const subject = filteredData[subjectKey];
-                const progress = getSubjectProgress(subjectKey);
-                const card = document.createElement('a');
-                card.className = 'subject-card';
-                card.href = `subject.html?subject=${subjectKey}`;
-                card.style.setProperty('--progress-color', subject.themeColor || '#4ade80');
-                card.style.animationDelay = `${delay}s`;
-                card.innerHTML = `
-                    <div class="card-icon-bg" style="background-color: ${subject.themeColor || '#4ade80'}33;">
-                        <span class="card-icon">${subject.icon}</span>
-                    </div>
-                    <h3>${subject.titulo}</h3>
-                    <div class="card-progress">
-                        <span class="progress-percent">${progress}%</span>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar" style="width: ${progress}%;"></div>
+
+            function renderSubjects(filteredData = appData) {
+                if (!subjectsGrid) return;
+                subjectsGrid.innerHTML = '';
+                if (!filteredData || Object.keys(filteredData).length === 0) {
+                    subjectsGrid.innerHTML = '<p class="no-subjects">No hay asignaturas definidas en data.js.</p>';
+                    return;
+                }
+                let delay = 0;
+                for (const subjectKey in filteredData) {
+                    const subject = filteredData[subjectKey];
+                    const progress = getSubjectProgress(subjectKey);
+                    const card = document.createElement('a');
+                    card.className = 'subject-card';
+                    card.href = `subject.html?subject=${subjectKey}`;
+                    card.style.setProperty('--progress-color', subject.themeColor || '#4ade80');
+                    card.style.animationDelay = `${delay}s`;
+                    card.innerHTML = `
+                        <div class="card-icon-bg" style="background-color: ${subject.themeColor || '#4ade80'}33;">
+                            <span class="card-icon">${subject.icon}</span>
                         </div>
-                    </div>
-                `;
-                subjectsGrid.appendChild(card);
-                delay += 0.05;
+                        <h3>${subject.titulo}</h3>
+                        <div class="card-progress">
+                            <span class="progress-percent">${progress}%</span>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar" style="width: ${progress}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                    subjectsGrid.appendChild(card);
+                    delay += 0.05;
+                }
             }
-        }
 
-        function handleSearch() {
-            const query = searchInput.value.toLowerCase();
-            const filtered = Object.keys(appData)
-                .filter(key => appData[key].titulo.toLowerCase().includes(query))
-                .reduce((obj, key) => ({ ...obj, [key]: appData[key] }), {});
-            renderSubjects(filtered);
-        }
+            function handleSearch() {
+                const query = searchInput.value.toLowerCase();
+                const filtered = Object.keys(appData)
+                    .filter(key => appData[key].titulo.toLowerCase().includes(query))
+                    .reduce((obj, key) => {
+                        obj[key] = appData[key];
+                        return obj;
+                    }, {});
+                renderSubjects(filtered);
+            }
 
-        searchInput.addEventListener('input', handleSearch);
-        
-        renderSubjects();
+            // 5. EVENTOS
+            searchInput.addEventListener('input', handleSearch);
+            
+            // 6. RENDERIZADO INICIAL
+            renderSubjects();
+        });
     </script>
 </body>
 </html>

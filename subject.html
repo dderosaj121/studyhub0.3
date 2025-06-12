@@ -33,43 +33,27 @@
             <div id="topics-grid" class="subjects-grid">
                 <!-- Las tarjetas de temas se cargarán aquí -->
             </div>
-
-            <!-- BOTÓN DE ELIMINAR AÑADIDO AQUÍ -->
-            <div class="delete-section">
-                <button id="delete-subject-btn" class="action-button danger">
-                    <span class="material-symbols-outlined">delete</span>
-                    Eliminar Asignatura
-                </button>
-            </div>
         </main>
     </div>
 
-    <script src="js/data.js"></script>
+    <script src="data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Carga el tema guardado
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') {
                 document.body.classList.add('light-mode');
             }
 
-            // Carga los datos de las asignaturas
-            const savedData = localStorage.getItem('studyHubData');
-            if (savedData) {
-                window.studyHubData = JSON.parse(savedData);
-            }
-
+            const appData = window.studyHubData;
             const urlParams = new URLSearchParams(window.location.search);
             const subjectKey = urlParams.get('subject');
-            const deleteBtn = document.getElementById('delete-subject-btn');
 
-
-            if (!subjectKey || !window.studyHubData[subjectKey]) {
+            if (!subjectKey || !appData[subjectKey]) {
                 document.body.innerHTML = '<h1>Error: Asignatura no encontrada.</h1><a href="index.html">Volver</a>';
                 return;
             }
 
-            const subjectData = window.studyHubData[subjectKey];
+            const subjectData = appData[subjectKey];
             document.title = `Temas de ${subjectData.titulo}`;
             document.getElementById('subject-title').innerHTML = `${subjectData.icon} ${subjectData.titulo}`;
             
@@ -81,7 +65,7 @@
             const topics = subjectData.topics || {};
             
             if (Object.keys(topics).length === 0) {
-                 topicsGrid.innerHTML = '<p class="no-subjects">No hay temas para esta asignatura todavía. ¡Crea uno con IA!</p>';
+                 topicsGrid.innerHTML = '<p class="no-subjects">No hay temas para esta asignatura todavía.</p>';
             } else {
                 for (const topicKey in topics) {
                     const topic = topics[topicKey];
@@ -108,30 +92,6 @@
                     topicsGrid.appendChild(card);
                 }
             }
-
-            // FUNCIÓN PARA MANEJAR LA ELIMINACIÓN
-            function handleDeleteSubject() {
-                const confirmation = confirm(`¿Estás seguro de que quieres eliminar la asignatura "${subjectData.titulo}"? Esta acción no se puede deshacer.`);
-
-                if (confirmation) {
-                    // 1. Eliminar datos de progreso de cada tema
-                    for (const topicKey in topics) {
-                        localStorage.removeItem(`studyhub-stats-${topicKey}`);
-                    }
-                    
-                    // 2. Eliminar la asignatura del objeto principal
-                    delete window.studyHubData[subjectKey];
-                    
-                    // 3. Guardar los datos actualizados en localStorage
-                    localStorage.setItem('studyHubData', JSON.stringify(window.studyHubData));
-                    
-                    // 4. Redirigir a la página de inicio
-                    alert(`La asignatura "${subjectData.titulo}" ha sido eliminada.`);
-                    window.location.href = 'index.html';
-                }
-            }
-            
-            deleteBtn.addEventListener('click', handleDeleteSubject);
         });
     </script>
 </body>
