@@ -63,7 +63,8 @@
 
         // Si no hay datos en localStorage, usa los de data.js
         if (!localStorage.getItem('studyHubData')) {
-            localStorage.setItem('studyHubData', JSON.stringify(window.studyHubData));
+           // LÍNEA CORREGIDA
+localStorage.setItem('studyHubData', JSON.stringify(studyHubData));
         }
         
         // Carga los datos desde localStorage para que se puedan borrar asignaturas

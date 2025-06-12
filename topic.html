@@ -63,7 +63,8 @@
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') document.body.classList.add('light-mode');
 
-            let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || window.studyHubData;
+            // LÍNEA CORREGIDA
+let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubData;
             
             const urlParams = new URLSearchParams(window.location.search);
             const subjectKey = urlParams.get('subject');
