@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temas</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
@@ -15,9 +15,9 @@
                 <span>StudyHub</span>
             </div>
             <nav class="app-nav">
-                <a href="index.html" class="nav-link">Inicio</a>
-                <a href="index.html#subjects-section-anchor" class="nav-link active">Mis Asignaturas</a>
-                <a href="settings.html" class="nav-link">Ajustes</a>
+                <a href="./index.html" class="nav-link">Inicio</a>
+                <a href="./index.html#subjects-section-anchor" class="nav-link active">Mis Asignaturas</a>
+                <a href="./settings.html" class="nav-link">Ajustes</a>
             </nav>
             <div class="profile-icon">
                 <span class="material-symbols-outlined">account_circle</span>
@@ -26,7 +26,7 @@
 
         <main>
             <div class="topic-header">
-                <a href="index.html" class="back-button">&larr; Volver a Mis Asignaturas</a>
+                <a href="./index.html" class="back-button">&larr; Volver a Mis Asignaturas</a>
                 <h1 id="subject-title">Cargando...</h1>
             </div>
 
@@ -44,25 +44,37 @@
         </main>
     </div>
 
-    <script src="data.js"></script>
+    <script src="./data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- LÓGICA DE CARGA DE DATOS ---
+            let appData;
+            const localData = localStorage.getItem('studyHubData');
+
+            if (localData) {
+                appData = JSON.parse(localData);
+            } else {
+                if (typeof studyHubData !== 'undefined') {
+                    appData = studyHubData;
+                    localStorage.setItem('studyHubData', JSON.stringify(appData));
+                } else {
+                    document.body.innerHTML = '<h1>Error: No se pudieron cargar los datos de las asignaturas.</h1><a href="./index.html">Volver</a>';
+                    return;
+                }
+            }
+            
             // Carga el tema guardado
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') {
                 document.body.classList.add('light-mode');
             }
 
-            // Carga los datos de las asignaturas
-            const appData = JSON.parse(localStorage.getItem('studyHubData'));
-
             const urlParams = new URLSearchParams(window.location.search);
             const subjectKey = urlParams.get('subject');
             const deleteBtn = document.getElementById('delete-subject-btn');
 
-
             if (!subjectKey || !appData[subjectKey]) {
-                document.body.innerHTML = '<h1>Error: Asignatura no encontrada.</h1><a href="index.html">Volver</a>';
+                document.body.innerHTML = '<h1>Error: Asignatura no encontrada.</h1><a href="./index.html">Volver</a>';
                 return;
             }
 
@@ -86,7 +98,7 @@
                     
                     const card = document.createElement('a');
                     card.className = 'subject-card'; 
-                    card.href = `topic.html?subject=${subjectKey}&topic=${topicKey}`;
+                    card.href = `./topic.html?subject=${subjectKey}&topic=${topicKey}`;
                     card.style.setProperty('--progress-color', themeColor);
                     
                     card.innerHTML = `
@@ -106,25 +118,15 @@
                 }
             }
 
-            // FUNCIÓN PARA MANEJAR LA ELIMINACIÓN
             function handleDeleteSubject() {
-                const confirmation = confirm(`¿Estás seguro de que quieres eliminar la asignatura "${subjectData.titulo}"? Esta acción no se puede deshacer.`);
-
-                if (confirmation) {
-                    // 1. Eliminar datos de progreso de cada tema
+                if (confirm(`¿Estás seguro de que quieres eliminar la asignatura "${subjectData.titulo}"? Esta acción no se puede deshacer.`)) {
                     for (const topicKey in topics) {
                         localStorage.removeItem(`studyhub-stats-${topicKey}`);
                     }
-                    
-                    // 2. Eliminar la asignatura del objeto principal
                     delete appData[subjectKey];
-                    
-                    // 3. Guardar los datos actualizados en localStorage
                     localStorage.setItem('studyHubData', JSON.stringify(appData));
-                    
-                    // 4. Redirigir a la página de inicio
                     alert(`La asignatura "${subjectData.titulo}" ha sido eliminada.`);
-                    window.location.href = 'index.html';
+                    window.location.href = './index.html';
                 }
             }
             

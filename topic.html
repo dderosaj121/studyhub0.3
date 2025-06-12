@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estudiando...</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
@@ -15,9 +15,9 @@
              <span>StudyHub</span>
          </div>
          <nav class="app-nav">
-             <a href="index.html" class="nav-link">Inicio</a>
-             <a href="index.html#subjects-section-anchor" class="nav-link active">Mis Asignaturas</a>
-             <a href="settings.html" class="nav-link">Ajustes</a>
+             <a href="./index.html" class="nav-link">Inicio</a>
+             <a href="./index.html#subjects-section-anchor" class="nav-link active">Mis Asignaturas</a>
+             <a href="./settings.html" class="nav-link">Ajustes</a>
          </nav>
          <div class="profile-icon">
              <span class="material-symbols-outlined">account_circle</span>
@@ -36,7 +36,7 @@
                 <button class="nav-button" data-view="active-recall-view">Active Recall <span class="nav-count" id="recall-count">0</span></button>
             </nav>
 
-            <div id="flashcards-view" class="view-container active">
+            <div id="flashcards-view" class="view-container">
                 <div id="fc-grid-container" class="flashcard-grid"></div>
             </div>
 
@@ -57,32 +57,45 @@
         </main>
     </div>
 
-    <script src="data.js"></script>
+    <script src="./data.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- LÓGICA DE CARGA DE DATOS ---
+            let appData;
+            const localData = localStorage.getItem('studyHubData');
+
+            if (localData) {
+                appData = JSON.parse(localData);
+            } else {
+                if (typeof studyHubData !== 'undefined') {
+                    appData = studyHubData;
+                    localStorage.setItem('studyHubData', JSON.stringify(appData));
+                } else {
+                    document.body.innerHTML = '<h1>Error: No se pudieron cargar los datos de la aplicación.</h1><a href="./index.html">Volver</a>';
+                    return;
+                }
+            }
+
             const currentTheme = localStorage.getItem('theme');
             if (currentTheme === 'light') document.body.classList.add('light-mode');
-
-            // LÍNEA CORREGIDA
-let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubData;
             
             const urlParams = new URLSearchParams(window.location.search);
             const subjectKey = urlParams.get('subject');
             const topicKey = urlParams.get('topic');
 
-            if (!subjectKey || !topicKey || !studyHubData[subjectKey] || !studyHubData[subjectKey].topics[topicKey]) {
-                document.body.innerHTML = '<h1>Error: Tema no encontrado.</h1><a href="index.html">Volver</a>';
+            if (!subjectKey || !topicKey || !appData[subjectKey] || !appData[subjectKey].topics[topicKey]) {
+                document.body.innerHTML = '<h1>Error: Tema no encontrado.</h1><a href="./index.html">Volver</a>';
                 return;
             }
             
-            const subjectData = studyHubData[subjectKey];
+            const subjectData = appData[subjectKey];
             const topicData = subjectData.topics[topicKey];
             const originalFlashcards = topicData.flashcardData || [];
             const quizQuestions = topicData.quizData || [];
             
             document.title = `Estudiando: ${topicData.titulo}`;
             document.getElementById('topic-title').textContent = topicData.titulo;
-            document.getElementById('back-to-subject-link').href = `subject.html?subject=${subjectKey}`;
+            document.getElementById('back-to-subject-link').href = `./subject.html?subject=${subjectKey}`;
             const themeColor = subjectData.themeColor || '#3b82f6';
             document.documentElement.style.setProperty('--accent-blue', themeColor);
 
@@ -100,6 +113,10 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
                     views.forEach(view => {
                         view.id === activeViewId ? view.classList.remove("hidden") : view.classList.add("hidden");
                     });
+                     // Lógica Active Recall: iniciar solo cuando se hace clic
+                    if (activeViewId === 'active-recall-view') {
+                        initActiveRecall();
+                    }
                 });
             });
 
@@ -107,6 +124,7 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
             function renderFlashcardsGrid() {
                 const container = document.getElementById('fc-grid-container');
                 if (!container) return;
+                container.innerHTML = ''; // Limpiar antes de renderizar
                 if (originalFlashcards.length === 0) {
                     container.innerHTML = "<p class='no-subjects'>No hay flashcards para este tema.</p>"; return;
                 }
@@ -172,17 +190,17 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
                 document.getElementById('repeat-test-btn').addEventListener('click', renderTest);
             }
             
-            // --- Lógica Active Recall Mejorada ---
+            // --- Lógica Active Recall ---
             function initActiveRecall() {
                 const arContainer = document.getElementById('ar-container');
-                if (!arContainer) return;
+                if (!arContainer || arContainer.querySelector('.ar-wrapper')) return; // No reiniciar si ya está activo
                 
                 if (originalFlashcards.length === 0) {
                     arContainer.innerHTML = "<div class='ar-wrapper'><p class='no-subjects'>No hay material para el modo de recuperación activa.</p></div>";
                     return;
                 }
 
-                let cardsToStudy = [...originalFlashcards]; // Empezamos con todas las tarjetas
+                let cardsToStudy = [...originalFlashcards];
                 let cardsToRetry = [];
                 let currentCardIndex = 0;
 
@@ -204,20 +222,14 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
                                 Tarjeta <span id="ar-current-card">1</span> de <span id="ar-total-cards">${cardsToStudy.length}</span>
                             </div>
                             <div class="ar-card">
-                                <div class="ar-question">
-                                    <p id="ar-question-text"></p>
-                                </div>
-                                <div id="ar-answer-container" class="ar-answer-container hidden">
-                                    <p id="ar-answer-text"></p>
-                                </div>
+                                <div class="ar-question"><p id="ar-question-text"></p></div>
+                                <div id="ar-answer-container" class="ar-answer-container hidden"><p id="ar-answer-text"></p></div>
                                 <div id="ar-rating-buttons" class="ar-rating-buttons hidden">
                                     <button id="ar-incorrect-btn" class="action-button incorrect-btn">No la sabía</button>
                                     <button id="ar-correct-btn" class="action-button correct-btn">¡La sabía!</button>
                                 </div>
                             </div>
-                            <div class="ar-controls">
-                                <button id="ar-show-answer-btn" class="action-button">Mostrar Respuesta</button>
-                            </div>
+                            <div class="ar-controls"><button id="ar-show-answer-btn" class="action-button">Mostrar Respuesta</button></div>
                         </div>`;
                     
                     addARListeners();
@@ -225,20 +237,12 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
                 };
 
                 const showCard = (index) => {
-                    const questionEl = document.getElementById('ar-question-text');
-                    const answerContainerEl = document.getElementById('ar-answer-container');
-                    const answerTextEl = document.getElementById('ar-answer-text');
-                    const ratingButtonsEl = document.getElementById('ar-rating-buttons');
-                    const showAnswerBtn = document.getElementById('ar-show-answer-btn');
-                    
                     document.getElementById('ar-current-card').textContent = index + 1;
-                    questionEl.innerHTML = cardsToStudy[index].q;
-                    answerTextEl.innerHTML = cardsToStudy[index].a;
-
-                    // Reset state
-                    answerContainerEl.classList.add('hidden');
-                    ratingButtonsEl.classList.add('hidden');
-                    showAnswerBtn.classList.remove('hidden');
+                    document.getElementById('ar-question-text').innerHTML = cardsToStudy[index].q;
+                    document.getElementById('ar-answer-text').innerHTML = cardsToStudy[index].a;
+                    document.getElementById('ar-answer-container').classList.add('hidden');
+                    document.getElementById('ar-rating-buttons').classList.add('hidden');
+                    document.getElementById('ar-show-answer-btn').classList.remove('hidden');
                 };
 
                 const showNextCard = () => {
@@ -271,9 +275,7 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
                         <div class="ar-wrapper ar-results-screen">
                             <h2>¡Felicidades!</h2>
                             <p>¡Has dominado todas las tarjetas de este tema!</p>
-                            <div class="ar-controls">
-                                <button id="ar-restart-btn" class="action-button">Volver a empezar</button>
-                            </div>
+                            <div class="ar-controls"><button id="ar-restart-btn" class="action-button">Volver a empezar</button></div>
                         </div>`;
                      document.getElementById('ar-restart-btn').addEventListener('click', () => startSession(originalFlashcards));
                  };
@@ -285,10 +287,7 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
                         document.getElementById('ar-show-answer-btn').classList.add('hidden');
                     });
                     
-                    document.getElementById('ar-correct-btn').addEventListener('click', () => {
-                        showNextCard();
-                    });
-
+                    document.getElementById('ar-correct-btn').addEventListener('click', showNextCard);
                     document.getElementById('ar-incorrect-btn').addEventListener('click', () => {
                         cardsToRetry.push(cardsToStudy[currentCardIndex]);
                         showNextCard();
@@ -298,15 +297,13 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
                 startSession(originalFlashcards);
             }
 
-            // --- Lógica para Eliminar Tema ---
             function handleDeleteTopic() {
-                const confirmation = confirm(`¿Estás seguro de que quieres eliminar el tema "${topicData.titulo}"? Esta acción no se puede deshacer.`);
-                if (confirmation) {
+                if (confirm(`¿Estás seguro de que quieres eliminar el tema "${topicData.titulo}"? Esta acción no se puede deshacer.`)) {
                     localStorage.removeItem(`studyhub-stats-${topicKey}`);
-                    delete studyHubData[subjectKey].topics[topicKey];
-                    localStorage.setItem('studyHubData', JSON.stringify(studyHubData));
+                    delete appData[subjectKey].topics[topicKey];
+                    localStorage.setItem('studyHubData', JSON.stringify(appData));
                     alert(`El tema "${topicData.titulo}" ha sido eliminado.`);
-                    window.location.href = `subject.html?subject=${subjectKey}`;
+                    window.location.href = `./subject.html?subject=${subjectKey}`;
                 }
             }
             document.getElementById('delete-topic-btn').addEventListener('click', handleDeleteTopic);
@@ -314,7 +311,6 @@ let studyHubData = JSON.parse(localStorage.getItem('studyHubData')) || studyHubD
             // --- Inicialización de las Vistas ---
             renderFlashcardsGrid();
             renderTest();
-            initActiveRecall();
         });
     </script>
 </body>
